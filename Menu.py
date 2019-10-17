@@ -76,9 +76,13 @@ while True:
             message = socks.recv(2048)
             if message.decode('utf-8') != 'true' and message.decode('utf-8') != 'false' and message.decode('utf-8') != 'Welcome to [EDD]Blockchain Project!': 
                 print("Recibiendo un Json")
-                print (message.decode('utf-8'))
-                texto = json.loads(message)
-                #print(texto["CLASS"])
+                print(message.decode('utf-8'))
+                print("Su previous en respuesta es:")
+                x = json.loads(message)
+                prev = x["PREVIOUSHASH"]
+                dat = x["CLASS"]
+                print(prev)
+                print(dat)
             else:
                 new_message = message.decode('utf-8')
                 if new_message == 'false':
@@ -117,10 +121,12 @@ while True:
                     #jsonString = json.dumps(envioJsonString)
                    
                     print("******************************")
-                    print(envioJsonString)
+                    print("Su previous es:")
+                    x = json.loads(envioJsonString)
+                    print(x["PREVIOUSHASH"])
                     #print(nodoNuevo.DATA)
                     #print("")
-                    #server.sendall(envioJsonString)
+                    server.sendall(envioJsonString.encode())
 
 
                 #message = sys.stdin.readline()
