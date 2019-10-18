@@ -45,25 +45,31 @@ def crearJson(index, time, clas, data, prev, has):
     print(prev)
     print(has)
     """
-    print("Imprimiendo solo la data")
-    print(data)
+    #print("Imprimiendo solo la dataB")
+    #print(data)
     print("-------------------------------------")
-    #data = json.dumps(data)
-    data = data.replace("\n", "")
-    data = data.replace("'\'", "")
+    #datab = json.loads(data)
+    #print(datab)
+    #data = data.replace("\n", "")
+    #data = data.replace("'\'", "")
     
-    objeto = {
+    """objeto = {
         "INDEX": index,
         "TIMESTAMP": ''+time+'',
         "CLASS": ''+clas+'',
         "DATA": data,
         "PREVIOUSHASH": ''+prev+'',
         "HASH": ''+has+''
-    }
+    }"""
 
-    y = json.dumps(objeto)
-    print(y)
-    return y
+    envio = "{\"INDEX\": " + str(index)+ ","+ "\"TIMESTAMP\": \""+ time+"\",\"CLASS\": \""+clas+"\",\"DATA\": "+data+",\"PREVIOUSHASH\": \""+prev+"\",\"HASH\": \""+has+"\"}"                                     
+    #y = json.dumps(objeto)
+    
+    print("+++++++++++++++++++++++++")
+    print(envio)
+    print("+++++++++++++++++++++++++")
+    #print(y)
+    return envio
 
 
 while True:
@@ -76,18 +82,46 @@ while True:
             message = socks.recv(2048)
             if message.decode('utf-8') != 'true' and message.decode('utf-8') != 'false' and message.decode('utf-8') != 'Welcome to [EDD]Blockchain Project!': 
                 print("Recibiendo un Json")
-                print(message.decode('utf-8'))
+                #print(message.decode('utf-8'))
                 print("Su previous en respuesta es:")
-                x = json.loads(message)
+                
+                #nodoNuevo.HASH = encrypt_string(str(nodoNuevo.INDEX) + nodoNuevo.TIMESTAMP + nodoNuevo.CLASS + nodoNuevo.DATA +str(nodoNuevo.PREVIOUSHASH)  )
+                x = json.loads(message.decode('utf-8'))
+                ind = x["INDEX"]
+                tim = x["TIMESTAMP"]
+                clas = x["CLASS"]
+                data = x["DATA"]
                 prev = x["PREVIOUSHASH"]
-                dat = x["CLASS"]
-                print(prev)
-                print(dat)
+                ha = x["HASH"]
+                print("la data es:")
+                print(data)
+                print("ffffffffffffffffffffffffffffffffffffffff")
+                databb = json.dumps(data)
+                print("la data nueva es:")
+                print(databb)
+                print("333333333333333333333333333333333333")
+                nuevoHash = encrypt_string(str(ind) + tim + clas + databb +prev)
+
+
+                print("NUEVO HASH")
+                print(nuevoHash)
+                print("hash recibido:")
+                print(ha)
+                if nuevoHash == ha:
+                    print("verdaderoo")
+                    server.sendall("true".encode())
+                else:
+                    print("falsoo")
+                    server.sendall('false'.encode())
+
+                #print(prev)
+                #print(dat)
             else:
                 new_message = message.decode('utf-8')
                 if new_message == 'false':
-                    print("FALSE")
+                    print("FALSO DE SERVIDOR")
                 elif new_message == 'true':
+                    print("verdadero de servidor")
                     print("true")
             #print ("recv:"+message.decode('utf-8'))
         else:
@@ -115,15 +149,20 @@ while True:
                         nodoNuevo.PREVIOUSHASH = "0001"
                     nodoNuevo.TIMESTAMP = now.strftime("%d-%m-%Y::%H:%M:&S")
                     nodoNuevo.CLASS = datos[0]
+                    #nuevod = datos[1]
+                    #nuevodd = nuevod.replace("\n", "")
                     nodoNuevo.DATA = datos[1]
-                    nodoNuevo.HASH = encrypt_string(str(nodoNuevo.INDEX) + nodoNuevo.TIMESTAMP + nodoNuevo.CLASS + nodoNuevo.DATA +str(nodoNuevo.PREVIOUSHASH)  )
+                    #nodoNuevo.DATA = nuevodd
+                    nodoNuevo.HASH = encrypt_string(str(nodoNuevo.INDEX) + nodoNuevo.TIMESTAMP + nodoNuevo.CLASS + nodoNuevo.DATA +nodoNuevo.PREVIOUSHASH)
+                    #nodoNuevo.HASH = encrypt_string(str(nodoNuevo.INDEX) + nodoNuevo.TIMESTAMP + nodoNuevo.CLASS  +nodoNuevo.PREVIOUSHASH)
                     envioJsonString = crearJson(nodoNuevo.INDEX,nodoNuevo.TIMESTAMP,nodoNuevo.CLASS,nodoNuevo.DATA,nodoNuevo.PREVIOUSHASH,nodoNuevo.HASH)
                     #jsonString = json.dumps(envioJsonString)
-                   
+                    
                     print("******************************")
-                    print("Su previous es:")
-                    x = json.loads(envioJsonString)
-                    print(x["PREVIOUSHASH"])
+                    print(envioJsonString)
+                    #print("HASH ENVIADO es:")
+                    #x = json.loads(envioJsonString)
+                    #print(x["HASH"])
                     #print(nodoNuevo.DATA)
                     #print("")
                     server.sendall(envioJsonString.encode())
