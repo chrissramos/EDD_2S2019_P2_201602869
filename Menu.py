@@ -47,7 +47,9 @@ def crearJson(index, time, clas, data, prev, has):
     """
     #print("Imprimiendo solo la dataB")
     #print(data)
-    print("-------------------------------------")
+    print("----------------creando json---------------------")
+    print(data)
+    print("----------------creo json---------------------")
     #datab = json.loads(data)
     #print(datab)
     #data = data.replace("\n", "")
@@ -82,25 +84,34 @@ while True:
             message = socks.recv(2048)
             if message.decode('utf-8') != 'true' and message.decode('utf-8') != 'false' and message.decode('utf-8') != 'Welcome to [EDD]Blockchain Project!': 
                 print("Recibiendo un Json")
-                #print(message.decode('utf-8'))
-                print("Su previous en respuesta es:")
                 
+                #print(message.decode('utf-8').rstrip())
+               
                 #nodoNuevo.HASH = encrypt_string(str(nodoNuevo.INDEX) + nodoNuevo.TIMESTAMP + nodoNuevo.CLASS + nodoNuevo.DATA +str(nodoNuevo.PREVIOUSHASH)  )
-                x = json.loads(message.decode('utf-8'))
+                x = json.loads(message.decode('utf-8').rstrip())
                 ind = x["INDEX"]
                 tim = x["TIMESTAMP"]
                 clas = x["CLASS"]
                 data = x["DATA"]
                 prev = x["PREVIOUSHASH"]
                 ha = x["HASH"]
-                print("la data es:")
-                print(data)
+
+
+                nuevo=json.dumps(data,separators=(',',':'))
+
+                print("NUEVO DATA entrando")
+                print(nuevo)
+                print("...........................................................")
+
+                #print("la data es:")
+                #print(data)
                 print("ffffffffffffffffffffffffffffffffffffffff")
-                databb = json.dumps(data)
-                print("la data nueva es:")
-                print(databb)
+                #databb = json.dumps(data)
+                #print("la data nueva es:")
+                #print(databb)
                 print("333333333333333333333333333333333333")
-                nuevoHash = encrypt_string(str(ind) + tim + clas + databb +prev)
+                
+                nuevoHash = encrypt_string(str(ind) + tim + clas + nuevo +prev)
 
 
                 print("NUEVO HASH")
@@ -149,23 +160,27 @@ while True:
                         nodoNuevo.PREVIOUSHASH = "0001"
                     nodoNuevo.TIMESTAMP = now.strftime("%d-%m-%Y::%H:%M:&S")
                     nodoNuevo.CLASS = datos[0]
-                    #nuevod = datos[1]
-                    #nuevodd = nuevod.replace("\n", "")
+                    nuevod = datos[1]
+                    
                     nodoNuevo.DATA = datos[1]
-                    #nodoNuevo.DATA = nuevodd
+                    #nodoNuevo.DATA = json.dumps(nuevod)
+                    print("DATA QUE ENVIAAAAAA")
+                    print(nodoNuevo.DATA)
+                    print("******************************")
                     nodoNuevo.HASH = encrypt_string(str(nodoNuevo.INDEX) + nodoNuevo.TIMESTAMP + nodoNuevo.CLASS + nodoNuevo.DATA +nodoNuevo.PREVIOUSHASH)
                     #nodoNuevo.HASH = encrypt_string(str(nodoNuevo.INDEX) + nodoNuevo.TIMESTAMP + nodoNuevo.CLASS  +nodoNuevo.PREVIOUSHASH)
                     envioJsonString = crearJson(nodoNuevo.INDEX,nodoNuevo.TIMESTAMP,nodoNuevo.CLASS,nodoNuevo.DATA,nodoNuevo.PREVIOUSHASH,nodoNuevo.HASH)
                     #jsonString = json.dumps(envioJsonString)
                     
-                    print("******************************")
-                    print(envioJsonString)
+                    print("***********json que envia*******************")
+                    #print(envioJsonString)
+
                     #print("HASH ENVIADO es:")
                     #x = json.loads(envioJsonString)
                     #print(x["HASH"])
                     #print(nodoNuevo.DATA)
                     #print("")
-                    server.sendall(envioJsonString.encode())
+                    server.sendall(envioJsonString.encode('utf-8'))
 
 
                 #message = sys.stdin.readline()
